@@ -3,96 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RockyMarket</title>
+    <title>RockyMarket - Marketplace</title>
     <style>
         body { margin: 0; font-family: Arial, sans-serif; background-color: #eaeded; }
-        header { background-color: #131921; color: white; padding-bottom: 10px; }
-        .top-bar { display: flex; justify-content: space-between; padding: 10px 15px; align-items: center; }
-        .logo { font-size: 20px; font-weight: bold; cursor: pointer; }
-        .search-container { display: flex; padding: 0 15px; }
-        input { flex: 1; height: 40px; border-radius: 4px 0 0 4px; border: none; padding-left: 10px; outline: none; }
-        .search-btn { background: #febd69; border: none; width: 45px; border-radius: 0 4px 4px 0; cursor: pointer; font-size: 18px; }
-        .nav-bar { display: flex; overflow-x: auto; padding: 10px 15px; background: #232f3e; margin-top: 10px; font-size: 13px; white-space: nowrap; }
-        .nav-bar span { margin-right: 15px; cursor: pointer; transition: 0.3s; }
-        .nav-bar span:hover { color: #febd69; }
-        .loc-bar { background: #37475a; padding: 8px 15px; font-size: 12px; cursor: pointer; }
-        .cart-container { position: relative; font-size: 25px; cursor: pointer; }
-        #nb-articles { position: absolute; top: -5px; right: -5px; background: #f08804; color: black; border-radius: 50%; padding: 2px 6px; font-size: 12px; font-weight: bold; }
-        .product-card { background: white; margin: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn-order { display: block; text-align: center; padding: 10px; margin-top: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        
+        /* 1. ÉCRAN D'ACCUEIL (MODAL) */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 1000; color: white; text-align: center;
+        }
+        .btn-welcome { padding: 15px 40px; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; margin: 10px; font-weight: bold; }
+        .btn-enter { background-color: #007bff; color: white; }
+        .btn-quit { background-color: #dc3545; color: white; }
+
+        /* 2. EN-TÊTE STYLE AMAZON */
+        header { background-color: #131921; color: white; padding: 10px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; }
+        .cart-icon { position: relative; font-size: 25px; cursor: pointer; }
+        #cart-count { position: absolute; top: -5px; right: -5px; background: #f08804; color: black; border-radius: 50%; padding: 2px 6px; font-size: 12px; }
+
+        /* 3. ARTICLES */
+        .market-container { display: flex; flex-wrap: wrap; justify-content: space-around; padding: 10px; }
+        .product-card { background: white; width: 45%; margin: 5px; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .product-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
+        .price { color: #B12704; font-size: 18px; font-weight: bold; }
+
+        /* 4. BOUTONS ACTION */
+        .btn-add { background: #ffd814; border: 1px solid #fcd200; width: 100%; padding: 8px; margin-top: 5px; cursor: pointer; border-radius: 5px; }
+        .btn-cancel { background: #f0f2f2; border: 1px solid #d5d9d9; width: 100%; padding: 8px; margin-top: 5px; cursor: pointer; border-radius: 5px; }
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 5px; margin-top: 5px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+
+        /* 5. ZONE PUBLICATION */
+        .sell-box { background: white; margin: 10px; padding: 15px; border-radius: 8px; border: 2px dashed #131921; }
+        input, select { width: 90%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
+        
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="top-bar">
-        <div class="logo" onclick="location.reload()">RockyMarket.fr</div>
-        <div style="display: flex; align-items: center;">
-            <div style="margin-right: 15px; font-size: 12px; cursor: pointer;" onclick="alert('Page de connexion en cours de création...')">Se connecter ></div>
-            <div class="cart-container" onclick="voirPanier()">
-                <span id="nb-articles">0</span>🛒
+<div id="welcome-screen">
+    <h2>Bonjour Madame/Monsieur,<br>souhaitez-vous entrer dans Rocky Market ?</h2>
+    <div>
+        <button class="btn-welcome btn-enter" onclick="entrerSite()">Entrez</button>
+        <button class="btn-welcome btn-quit" onclick="quitterSite()">Quitter</button>
+    </div>
+</div>
+
+<div id="main-content" class="hidden">
+    <header>
+        <div class="top-bar">
+            <h2 onclick="location.reload()">RockyMarket</h2>
+            <div id="user-info" style="font-size: 12px;"></div>
+            <div class="cart-icon" onclick="ouvrirPanier()">
+                <span id="cart-count">0</span>🛒
             </div>
         </div>
+        <div id="auth-section" style="padding: 10px 0;">
+            <input type="email" id="user-email" placeholder="Email (rocngo5@gmail.com)">
+            <input type="password" id="user-pass" placeholder="Mot de passe">
+            <button onclick="connexion()" style="background: #febd69; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold;">Se connecter pour Vendre/Acheter</button>
+        </div>
+    </header>
+
+    <div id="publish-section" class="sell-box hidden">
+        <h3>Publier un article</h3>
+        <input type="file" id="post-image" accept="image/*">
+        <input type="text" id="post-title" placeholder="Nom de l'article">
+        <input type="number" id="post-price" placeholder="Prix (ex: 15000)">
+        <button onclick="publierArticle()" style="background: #131921; color: white; padding: 10px; width: 100%; border: none; border-radius: 5px;">Publier directement</button>
     </div>
 
-    <div class="search-container">
-        <input type="text" id="moteur-recherche" placeholder="Rechercher RockyMarket.fr">
-        <button class="search-btn" onclick="lancerRecherche()">🔍</button>
-    </div>
-
-    <div class="nav-bar">
-        <span onclick="alert('Menu complet bientôt disponible')">☰ Toutes</span>
-        <span onclick="alert('Nouveautés Haul')">Haul</span>
-        <span onclick="alert('Top des ventes')">Meilleures ventes</span>
-        <span onclick="alert('Rayon Basics')">Amazon Basics</span>
-    </div>
-
-    <div class="loc-bar" onclick="changerLocalisation()">
-        📍 Votre adresse de livraison: <span id="ville">Congo, République ...</span>
-    </div>
-</header>
-
-<main id="liste-produits">
-    <div class="product-card">
-        <h3>Article Exemple</h3>
-        <p>Prix : 5.000 FCFA</p>
-        <button onclick="ajouterAuPanier('Article Exemple')" style="width: 100%; padding: 10px; background: #ffd814; border: 1px solid #fcd200; border-radius: 5px; cursor: pointer;">Ajouter au panier</button>
-        <a href="https://wa.me/243822178481?text=Je%20veux%20commander%20l'article" class="btn-order" style="background: #25D366; color: white;">Commander via WhatsApp</a>
-    </div>
-</main>
+    <div class="market-container" id="market-list">
+        </div>
+</div>
 
 <script>
-    let compteur = 0;
+    let isConnected = false;
+    let cart = [];
+    let userEmail = "";
 
-    // 1. Fonction pour le Panier
-    function ajouterAuPanier(nom) {
-        compteur++;
-        document.getElementById('nb-articles').innerText = compteur;
-        alert(nom + " ajouté au panier !");
+    // 1. GESTION ACCUEIL
+    function entrerSite() {
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('main-content').classList.remove('hidden');
+        demanderLocalisation();
     }
 
-    function voirPanier() {
-        alert("Vous avez " + compteur + " articles dans votre panier.");
+    function quitterSite() {
+        window.location.href = "https://www.google.com";
     }
 
-    // 2. Fonction pour la Recherche
-    function lancerRecherche() {
-        let texte = document.getElementById('moteur-recherche').value;
-        if(texte == "") {
-            alert("Veuillez taper quelque chose à rechercher.");
-        } else {
-            alert("Recherche de : " + texte);
+    // 2. LOCALISATION & TÉLÉPHONE
+    function demanderLocalisation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                console.log("Localisation activée : " + position.coords.latitude);
+            }, () => {
+                alert("La localisation est nécessaire pour que les vendeurs vous retrouvent.");
+            });
         }
     }
 
-    // 3. Fonction pour changer la localisation
-    function changerLocalisation() {
-        let nouvelleVille = prompt("Entrez votre ville :");
-        if(nouvelleVille) {
-            document.getElementById('ville').innerText = nouvelleVille;
+    // 3. CONNEXION
+    function connexion() {
+        userEmail = document.getElementById('user-email').value;
+        let pass = document.getElementById('user-pass').value;
+        if(userEmail && pass) {
+            isConnected = true;
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('publish-section').classList.remove('hidden');
+            document.getElementById('user-info').innerText = "Connecté : " + userEmail;
+            alert("Bienvenue sur RockyMarket !");
+        } else {
+            alert("Veuillez entrer votre email et mot de passe.");
+        }
+    }
+
+    // 4. PUBLICATION D'ARTICLE
+    function publierArticle() {
+        const title = document.getElementById('post-title').value;
+        const price = document.getElementById('post-price').value;
+        const imgInput = document.getElementById('post-image');
+
+        if(title && price && imgInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newId = Date.now();
+                const html = `
+                    <div class="product-card" id="art-${newId}">
+                        <img src="${e.target.result}">
+                        <h4>${title}</h4>
+                        <p class="price">${price} FCFA</p>
+                        <button class="btn-add" onclick="ajouterPanier('${title}', ${price})">Ajouter au panier</button>
+                        <button class="btn-cancel" onclick="annulerAjout()">Annuler l'ajout</button>
+                        <button class="btn-delete" onclick="supprimerArticle('art-${newId}')">Supprimer mon article</button>
+                    </div>
+                `;
+                document.getElementById('market-list').insertAdjacentHTML('afterbegin', html);
+            };
+            reader.readAsDataURL(imgInput.files[0]);
+        }
+    }
+
+    function supprimerArticle(id) {
+        if(confirm("Supprimer cet article ?")) {
+            document.getElementById(id).remove();
+        }
+    }
+
+    // 5. PANIER & COMMANDE
+    function ajouterPanier(nom, prix) {
+        if(!isConnected) {
+            alert("Veuillez vous connecter pour ajouter au panier.");
+            return;
+        }
+        cart.push({nom, prix});
+        document.getElementById('cart-count').innerText = cart.length;
+        alert(nom + " ajouté !");
+    }
+
+    function annulerAjout() {
+        if(cart.length > 0) {
+            cart.pop();
+            document.getElementById('cart-count').innerText = cart.length;
+            alert("Dernier ajout annulé.");
+        }
+    }
+
+    function ouvrirPanier() {
+        if(cart.length === 0) {
+            alert("Votre panier est vide.");
+            return;
+        }
+        let message = "Articles : " + cart.map(i => i.nom).join(", ");
+        let whatsappURL = "https://wa.me/243822178481?text=" + encodeURIComponent("Ma commande : " + message);
+        let emailURL = "mailto:rocngo5@gmail.com?subject=Commande&body=" + encodeURIComponent(message);
+        
+        if(confirm("Passer commande ? \nOK pour WhatsApp, Annuler pour Email")) {
+            window.location.href = whatsappURL;
+        } else {
+            window.location.href = emailURL;
         }
     }
 </script>
-
 </body>
 </html>
+
