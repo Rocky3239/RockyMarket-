@@ -54,6 +54,15 @@
 <div id="main-content" class="hidden">
     <header>
         <div class="top-bar">
+<div class="search-bar" style="padding: 10px; background: #232f3e; display: flex;">
+    <input type="text" placeholder="Rechercher sur RockyMarket..." 
+           style="flex: 1; padding: 10px; border-radius: 4px 0 0 4px; border: none;">
+    <button onclick="rechercherArticle()" 
+            style="padding: 10px; background: #febd69; border: none; border-radius: 0 4px 4px 0;">
+        🔍
+    </button>
+</div>
+
             <h2 onclick="location.reload()">RockyMarket</h2>
             <div id="user-info" style="font-size: 12px;"></div>
             <div class="cart-icon" onclick="ouvrirPanier()">
