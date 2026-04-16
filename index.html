@@ -3,150 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RockyMarket - Marketplace</title>
+    <title>RockyMarket - Vente en ligne</title>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background-color: #eaeded; }
-        
-        /* 1. ÉCRAN D'ACCUEIL (MODAL) */
-        #welcome-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 1000; color: white; text-align: center;
-        }
-        .btn-welcome { padding: 15px 40px; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; margin: 10px; font-weight: bold; }
-        .btn-enter { background-color: #007bff; color: white; }
-        .btn-quit { background-color: #dc3545; color: white; }
-
-        /* 2. EN-TÊTE STYLE AMAZON */
-        header { background-color: #131921; color: white; padding: 10px; }
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #f3f3f3; }
+        header { background-color: #232f3e; color: white; padding: 10px; position: sticky; top: 0; z-index: 100; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; }
-        .cart-icon { position: relative; font-size: 25px; cursor: pointer; }
-        #cart-count { position: absolute; top: -5px; right: -5px; background: #f08804; color: black; border-radius: 50%; padding: 2px 6px; font-size: 12px; }
-
-        /* 3. ARTICLES */
-        .market-container { display: flex; flex-wrap: wrap; justify-content: space-around; padding: 10px; }
-        .product-card { background: white; width: 45%; margin: 5px; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .product-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
-        .price { color: #B12704; font-size: 18px; font-weight: bold; }
-
-        /* 4. BOUTONS ACTION */
-        .btn-add { background: #ffd814; border: 1px solid #fcd200; width: 100%; padding: 8px; margin-top: 5px; cursor: pointer; border-radius: 5px; }
-        .btn-cancel { background: #f0f2f2; border: 1px solid #d5d9d9; width: 100%; padding: 8px; margin-top: 5px; cursor: pointer; border-radius: 5px; }
-        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 5px; margin-top: 5px; border-radius: 3px; cursor: pointer; font-size: 12px; }
-
-        /* 5. ZONE PUBLICATION */
-        .sell-box { background: white; margin: 10px; padding: 15px; border-radius: 8px; border: 2px dashed #131921; }
-        input, select { width: 90%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
+        .logo { color: #febd69; font-size: 24px; font-weight: bold; text-decoration: none; }
         
+        /* Barre de recherche large */
+        .search-container { display: flex; margin-top: 10px; width: 100%; }
+        #search-input { flex: 1; height: 45px; padding: 0 15px; border: none; border-radius: 4px 0 0 4px; font-size: 16px; }
+        .search-btn { width: 55px; height: 45px; background-color: #febd69; border: none; border-radius: 0 4px 4px 0; font-size: 20px; cursor: pointer; }
+
+        .market-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+        .product-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .product-card img { width: 100%; height: 150px; object-fit: cover; }
+        .product-info { padding: 10px; }
+        .product-info h4 { margin: 5px 0; font-size: 14px; height: 35px; overflow: hidden; }
+        .price { color: #B12704; font-size: 18px; font-weight: bold; margin: 5px 0; }
+        
+        .publish-btn { background-color: #ffa41c; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; position: fixed; bottom: 0; }
         .hidden { display: none; }
+        .modal { background: white; padding: 20px; position: fixed; top: 20%; left: 5%; width: 90%; z-index: 200; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        input[type="text"], input[type="number"] { width: 90%; padding: 10px; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-<div id="welcome-screen">
-    <h2>Bonjour Madame/Monsieur,<br>souhaitez-vous entrer dans Rocky Market ?</h2>
-    <div>
-        <button class="btn-welcome btn-enter" onclick="entrerSite()">Entrez</button>
-        <button class="btn-welcome btn-quit" onclick="quitterSite()">Quitter</button>
-    </div>
-</div>
-
-<div id="main-content" class="hidden">
-    <header>
-        <div class="top-bar">
-<div class="search-bar" style="padding: 10px; background: #232f3e; display: flex;">
-    <input type="text" placeholder="Rechercher sur RockyMarket..." 
-           style="flex: 1; padding: 10px; border-radius: 4px 0 0 4px; border: none;">
-    <button onclick="rechercherArticle()" 
-            style="padding: 10px; background: #febd69; border: none; border-radius: 0 4px 4px 0;">
-        🔍
-    </button>
-</div>
-
-            <h2 onclick="location.reload()">RockyMarket</h2>
-            <div id="user-info" style="font-size: 12px;"></div>
-            <div class="cart-icon" onclick="ouvrirPanier()">
-                <span id="cart-count">0</span>🛒
-            </div>
-        </div>
-        <div id="auth-section" style="padding: 10px 0;">
-            <input type="email" id="user-email" placeholder="Email (rocngo5@gmail.com)">
-            <input type="password" id="user-pass" placeholder="Mot de passe">
-            <button onclick="connexion()" style="background: #febd69; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold;">Se connecter pour Vendre/Acheter</button>
-        </div>
-    </header
->
-<div class="search-bar" style="padding: 10px; background: #232f3e; display: flex; align-items: center;">
-    <input type="text" id="search-input" oninput="rechercherArticle()" placeholder="Rechercher sur RockyMarket..." 
-           style="flex: 1; height: 45px; padding: 0 15px; border-radius: 4px 0 0 4px; border: none; font-size: 16px;">
-    <button onclick="rechercherArticle()" 
-           style="width: 50px; height: 45px; background: #febd69; border: none; border-radius: 0 4px 4px 0; font-size: 20px;"
 <header>
     <div class="top-bar">
-        <h2 onclick="location.reload()">RockyMarket</h2>
-        ...
+        <div class="logo">RockyMarket</div>
+        <div onclick="document.getElementById('publish-modal').classList.toggle('hidden')" style="font-size: 24px;">➕</div>
     </div>
-    </header>
->
-        🔍
-    </button>
+    <div class="search-container">
+        <input type="text" id="search-input" oninput="rechercherArticle()" placeholder="Rechercher un produit ou un prix...">
+        <button class="search-btn" onclick="rechercherArticle()">🔍</button>
+    </div>
+</header>
+
+<div id="publish-modal" class="modal hidden">
+    <h3>Publier un article</h3>
+    <input type="file" id="post-image" accept="image/*">
+    <input type="text" id="post-title" placeholder="Nom de l'article">
+    <input type="number" id="post-price" placeholder="Prix en FCFA">
+    <button onclick="publierArticle()" style="background: #232f3e; color: white; padding: 10px; width: 100%; border: none; border-radius: 5px;">Publier Définitivement</button>
+    <button onclick="document.getElementById('publish-modal').classList.add('hidden')" style="margin-top: 10px; background: none; border: none; color: red; width: 100%;">Annuler</button>
 </div>
 
-    <div id="publish-section" class="sell-box hidden">
-        <h3>Publier un article</h3>
-        <input type="file" id="post-image" accept="image/*">
-        <input type="text" id="post-title" placeholder="Nom de l'article">
-        <input type="number" id="post-price" placeholder="Prix (ex: 15000)">
-        <button onclick="publierArticle()" style="background: #131921; color: white; padding: 10px; width: 100%; border: none; border-radius: 5px;">Publier directement</button>
+<div class="market-container" id="market-list">
     </div>
 
-    <div class="market-container" id="market-list">
-        </div>
-</div>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
 <script>
-    let isConnected = false;
-    let cart = [];
-    let userEmail = "";
+    // TA CONFIGURATION (Remplace les ... par tes vrais codes)
+    const firebaseConfig = {
+        apiKey: "AIzaSyA47z9X0USyncaOeRKk46iS_T_T8", 
+        authDomain: "rockymarket.firebaseapp.com",
+        projectId: "rockymarket",
+        storageBucket: "rockymarket.appspot.com",
+        messagingSenderId: "471682542241",
+        appId: "1:471682542241:web:f539491428f53949" 
+    };
 
-    // 1. GESTION ACCUEIL
-    function entrerSite() {
-        document.getElementById('welcome-screen').style.display = 'none';
-        document.getElementById('main-content').classList.remove('hidden');
-        demanderLocalisation();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 1. RECHERCHE
+    function rechercherArticle() {
+        let text = document.getElementById('search-input').value.toLowerCase();
+        let articles = document.querySelectorAll('.product-card');
+        articles.forEach(art => {
+            let nom = art.querySelector('h4').innerText.toLowerCase();
+            let prix = art.querySelector('.price').innerText.toLowerCase();
+            art.style.display = (nom.includes(text) || prix.includes(text)) ? "flex" : "none";
+        });
     }
 
-    function quitterSite() {
-        window.location.href = "https://www.google.com";
-    }
-
-    // 2. LOCALISATION & TÉLÉPHONE
-    function demanderLocalisation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                console.log("Localisation activée : " + position.coords.latitude);
-            }, () => {
-                alert("La localisation est nécessaire pour que les vendeurs vous retrouvent.");
-            });
-        }
-    }
-
-    // 3. CONNEXION
-    function connexion() {
-        userEmail = document.getElementById('user-email').value;
-        let pass = document.getElementById('user-pass').value;
-        if(userEmail && pass) {
-            isConnected = true;
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('publish-section').classList.remove('hidden');
-            document.getElementById('user-info').innerText = "Connecté : " + userEmail;
-            alert("Bienvenue sur RockyMarket !");
-        } else {
-            alert("Veuillez entrer votre email et mot de passe.");
-        }
-    }
-
-    // 4. PUBLICATION D'ARTICLE
+    // 2. PUBLIER DANS LE CLOUD
     function publierArticle() {
         const title = document.getElementById('post-title').value;
         const price = document.getElementById('post-price').value;
@@ -155,64 +90,42 @@
         if(title && price && imgInput.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const newId = Date.now();
-                const html = `
-                    <div class="product-card" id="art-${newId}">
-                        <img src="${e.target.result}">
-                        <h4>${title}</h4>
-                        <p class="price">${price} FCFA</p>
-                        <button class="btn-add" onclick="ajouterPanier('${title}', ${price})">Ajouter au panier</button>
-                        <button class="btn-cancel" onclick="annulerAjout()">Annuler l'ajout</button>
-                        <button class="btn-delete" onclick="supprimerArticle('art-${newId}')">Supprimer mon article</button>
-                    </div>
-                `;
-                document.getElementById('market-list').insertAdjacentHTML('afterbegin', html);
+                const articleData = {
+                    nom: title,
+                    prix: price,
+                    image: e.target.result,
+                    date: Date.now()
+                };
+                db.ref('articles').push(articleData).then(() => {
+                    alert("Article enregistré dans le Cloud !");
+                    document.getElementById('publish-modal').classList.add('hidden');
+                });
             };
             reader.readAsDataURL(imgInput.files[0]);
-        }
-    }
-
-    function supprimerArticle(id) {
-        if(confirm("Supprimer cet article ?")) {
-            document.getElementById(id).remove();
-        }
-    }
-
-    // 5. PANIER & COMMANDE
-    function ajouterPanier(nom, prix) {
-        if(!isConnected) {
-            alert("Veuillez vous connecter pour ajouter au panier.");
-            return;
-        }
-        cart.push({nom, prix});
-        document.getElementById('cart-count').innerText = cart.length;
-        alert(nom + " ajouté !");
-    }
-
-    function annulerAjout() {
-        if(cart.length > 0) {
-            cart.pop();
-            document.getElementById('cart-count').innerText = cart.length;
-            alert("Dernier ajout annulé.");
-        }
-    }
-
-    function ouvrirPanier() {
-        if(cart.length === 0) {
-            alert("Votre panier est vide.");
-            return;
-        }
-        let message = "Articles : " + cart.map(i => i.nom).join(", ");
-        let whatsappURL = "https://wa.me/243822178481?text=" + encodeURIComponent("Ma commande : " + message);
-        let emailURL = "mailto:rocngo5@gmail.com?subject=Commande&body=" + encodeURIComponent(message);
-        
-        if(confirm("Passer commande ? \nOK pour WhatsApp, Annuler pour Email")) {
-            window.location.href = whatsappURL;
         } else {
-            window.location.href = emailURL;
+            alert("Remplissez tout, Patron !");
         }
     }
+
+    // 3. CHARGER LES ARTICLES
+    db.ref('articles').on('value', (snapshot) => {
+        const list = document.getElementById('market-list');
+        list.innerHTML = '';
+        snapshot.forEach((child) => {
+            const data = child.val();
+            list.innerHTML += `
+                <div class="product-card">
+                    <img src="${data.image}">
+                    <div class="product-info">
+                        <h4>${data.nom}</h4>
+                        <p class="price">${data.prix} FCFA</p>
+                        <button onclick="window.location.href='https://wa.me/243822178481'" style="width:100%; background:#febd69; border:none; border-radius:4px; padding:5px;">Acheter</button>
+                    </div>
+                </div>`;
+        });
+    });
 </script>
+
 </body>
 </html>
 
