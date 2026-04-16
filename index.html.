@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RockyMarket</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f0f2f5; }
+        
+        /* Fenêtre de bienvenue qui couvre tout */
+        #barriere {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10000;
+        }
+
+        .fenetre {
+            background: white; padding: 30px; border-radius: 20px;
+            text-align: center; width: 80%; max-width: 400px;
+        }
+
+        .btn-box { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        
+        .btn { padding: 15px 25px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-oui { background: #28a745; color: white; }
+        .btn-non { background: #dc3545; color: white; }
+
+        header { background: #0047ab; color: white; padding: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="barriere">
+        <div class="fenetre">
+            <h2>Bonjour Madame, Monsieur</h2>
+            <p>Souhaitez-vous entrer dans le site ?</p>
+            <div class="btn-box">
+                <button class="btn btn-oui" onclick="entrer()">OUI</button>
+                <button class="btn btn-non" onclick="quitter()">QUITTÉ</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <h1>RockyMarket 🛒</h1>
+        <p>Bienvenue, Patron Rocky</p>
+    </header>
+
+    <div style="padding: 20px; text-align: center;">
+        <p>Votre boutique est prête !</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+
+<script>
+    // Ta configuration Firebase réelle issue de tes captures
+    const firebaseConfig = {
+        apiKey: "AIzaSyA47z9X0USyncaOeRKk46i...", // Ta clé vue sur l'image
+        authDomain: "rockymarket.firebaseapp.com",
+        projectId: "rockymarket",
+        storageBucket: "rockymarket.appspot.com",
+        messagingSenderId: "471682542241",
+        appId: "1:471682542241:web:f53949142..."
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 1. FONCTION DE RECHERCHE (Ce que tu as demandé)
+    function rechercherArticle() {
+        let text = document.querySelector('.search-bar input').value.toLowerCase();
+        let articles = document.querySelectorAll('.product-card');
+        
+        articles.forEach(art => {
+            let nom = art.querySelector('h4').innerText.toLowerCase();
+            // Si le nom contient le texte recherché, on l'affiche, sinon on cache
+            art.style.display = nom.includes(text) ? "block" : "none";
+        });
+    }
+
+    // 2. SAUVEGARDE PERMANENTE DANS LE CLOUD
+    function publierArticle() {
+        const title = document.getElementById('post-title').value;
+        const price = document.getElementById('post-price').value;
+        const imgInput = document.getElementById('post-image');
+
+        if(title && price && imgInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const articleData = {
+                    nom: title,
+                    prix: price,
+                    image: e.target.result,
+                    date: Date.now()
+                };
+                // Envoi vers ta base de données Firebase
+                db.ref('articles').push(articleData);
+                alert("Article publié définitivement !");
+            };
+            reader.readAsDataURL(imgInput.files[0]);
+        }
+    }
+
+    // 3. CHARGEMENT AUTOMATIQUE DEPUIS LE CLOUD
+    db.ref('articles').on('value', (snapshot) => {
+        const list = document.getElementById('market-list');
+        list.innerHTML = ''; // On vide pour recharger proprement
+        snapshot.forEach((child) => {
+            const data = child.val();
+            list.innerHTML += `
+                <div class="product-card">
+                    <img src="${data.image}" style="width:100%; height:150px; object-fit:cover;">
+                    <h4>${data.nom}</h4>
+                    <p class="price">${data.prix} FCFA</p>
+                    <button class="btn-add">Ajouter au panier</button>
+                    <button class="btn-whatsapp" onclick="window.location.href='https://wa.me/243822178481'">Commander</button>
+                </div>`;
+        });
+    });
+</script>
+
+</body>
+</html>
+
